@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* Full height flex layout */
+    body { 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column;
+        background-color: #111; 
+        color: #0f0; 
+        font-family: monospace; 
+        padding: 15px; 
+        margin: 0; 
+        box-sizing: border-box;
+    }
+    h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    select, button { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; }
+    button:hover { background: #0f0; color: #000; font-weight: bold; }
+    
+    /* Log box now stretches to fill all available vertical space */
+    .log-box { 
+        flex-grow: 1; 
+        background: #000; 
+        border: 1px solid #333; 
+        padding: 10px; 
+        overflow-y: auto; 
+        color: #888; 
+        font-size: 12px; 
+        white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h3>🗡️ GBF Auto Framework</h3>
+  
+  <select id="routineSelect">
+    <option value="slime">🗡️ Slime Farmer Routine</option>
+    <option value="buff">🎁 Daily Buff Checker</option>
+  </select>
+
+  <button id="startBtn">Start Engine</button>
+  
+  <div class="log-box" id="statusLog">>> Framework IDLE...</div>
+
+  <script src="panel.js"></script>
+</body>
+</html>
