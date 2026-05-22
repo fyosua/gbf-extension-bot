@@ -1,18 +1,22 @@
 # 🗡️ Granblue Automation Framework
 
-A lightweight, state-based DOM automation tool for Granblue Fantasy, built as a Manifest V3 Chrome Extension. 
+A lightweight, state-based DOM automation tool for Granblue Fantasy, built as a Manifest V3 Chrome Extension.
 
-Unlike traditional macro recorders or pixel-search bots (like PyAutoGUI), this framework operates natively within the browser environment. It uses a **Tick-Based State Machine** to read the game's actual URL hash and DOM elements in real-time, making it entirely immune to network lag, loading screen freezes, and hidden "ghost" buttons.
+Unlike traditional macro recorders or pixel-search bots, this framework operates natively within the browser environment. It uses a **Tick-Based State Machine** to read the game's actual URL hash and DOM elements in real-time, making it highly resilient to network lag, loading screen freezes, and hidden "ghost" buttons.
 
 ## ✨ Features
 
 * **Tick-Based Heartbeat Engine:** Evaluates the game state every second, ensuring flawless transitions and instant response to manual stops.
-* **Side Panel UI:** A custom, full-height dark mode terminal that docks directly to the side of your browser for real-time logging.
-* **Persistent Session Memory:** Utilizes `sessionStorage` to survive Granblue's native page reloads and hash routing.
-* **Native DOM Injection:** Bypasses basic bot-detection by synthesizing precise `mousedown` and `mouseup` events directly on game elements.
-* **Automated Routines:**
-  * **🎁 Daily Buff Checker:** Verifies and activates Trajectory Drops (0/3) before grinding.
-  * **🗡️ Slime Farmer:** Fully handles supporter selection, battle engagement, result processing, Rank Up popups, and automatic retries.
+* **Dynamic Side Panel UI:** A custom dark mode terminal that docks directly to your browser. Features a state-aware action button that updates in real-time based on the engine's current task.
+* **Persistent Session Memory:** Utilizes `sessionStorage` to survive Granblue's native page reloads, soft-errors, and hash routing.
+* **Native DOM Injection:** Synthesizes precise `mousedown` and `mouseup` events directly on game elements. Includes a `force` parameter to interact with unrendered or hidden DOM lists.
+* **Drift Recovery:** Automatically detects if the game state gets lost due to lag or soft-errors and safely redirects back to a known active URL hash.
+
+## 🤖 Automated Routines
+
+* **🎁 Daily Buff Checker:** Verifies and activates Trajectory Drops (0/3) before grinding. Fires automatically once per session.
+* **🗡️ Slime Farmer:** Fully handles supporter selection, AP item consumption, battle engagement, result processing, Rank Up popups, and automatic retries.
+* **⏩ Daily Pro Skip:** Dynamically sweeps through all available Pro Skip raids (Hard+, Omega, Primarch, etc.). Automatically halts the engine and resets the UI when all daily skips are complete.
 
 ## 🛠️ Architecture
 
@@ -27,7 +31,7 @@ Unlike traditional macro recorders or pixel-search bots (like PyAutoGUI), this f
 3. Toggle **Developer mode** ON (top right corner).
 4. Click **Load unpacked** (top left corner).
 5. Select the folder containing this repository.
-6. The extension is now installed and active!
+6. Make sure you hit the refresh icon on the extension card and hard-refresh (F5) your GBF tab if updating from a previous version.
 
 ## 🎮 Usage
 
@@ -36,7 +40,7 @@ Unlike traditional macro recorders or pixel-search bots (like PyAutoGUI), this f
 3. Select your desired routine from the dropdown menu.
 4. Click **Start Engine**.
 
-To stop the bot at any time, click **Stop Engine**. The state machine will safely halt at the next tick cycle.
+The UI button will dynamically change to reflect the bot's current action. To stop the bot at any time, click the red **Stop Engine** button. The state machine will safely halt at the next tick cycle and clear its memory.
 
 ## ⚠️ Disclaimer
 
