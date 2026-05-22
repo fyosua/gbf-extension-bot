@@ -134,6 +134,11 @@ async function farmSlimeRoutine() {
             uiLog("[State C] Result Clearing...");
             let madeAnAction = false; 
 
+            const emptyResult = document.querySelector(".txt-empty-notice");
+            if(emptyResult){
+                madeAnAction = true;
+            }
+
             if (document.querySelector("#cjs-lp-rankup")) {
                 await gameClick("#cjs-lp-rankup");
                 await sleep(500);
@@ -154,11 +159,6 @@ async function farmSlimeRoutine() {
             }
 
             if (madeAnAction) {
-                continue; 
-            }
-
-            const emptyResult = document.querySelector(".txt-empty-notice");
-            if(emptyResult){
                 continue; 
             }
         }

@@ -1,26 +1,45 @@
 {
   "manifest_version": 3,
   "name": "Granblue Automation Framework",
-  "version": "1.1",
-  "description": "Full-height side panel DOM automation tool.",
+  "version": "1.0",
+  "description": "Tick-based DOM automation tool for GBF.",
+  
+  "icons": {
+    "16": "assets/icon.png",
+    "48": "assets/icon.png",
+    "128": "assets/icon.png"
+  },
+  
   "permissions": [
-    "tabs", 
-    "activeTab", 
+    "sidePanel",
+    "activeTab",
     "scripting",
-    "sidePanel"
+    "storage"
+  ],
+  "host_permissions": [
+    "*://game.granbluefantasy.jp/*",
+    "*://gbf.game.mbga.jp/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Open GBF Framework"
+    "default_title": "Open GBF Framework",
+    "default_icon": {
+      "16": "assets/icon.png",
+      "48": "assets/icon.png",
+      "128": "assets/icon.png"
+    }
   },
   "side_panel": {
     "default_path": "panel.html"
   },
   "content_scripts": [
     {
-      "matches": ["*://game.granbluefantasy.jp/*", "*://gbf.game.mbga.jp/*"],
+      "matches": [
+        "*://game.granbluefantasy.jp/*",
+        "*://gbf.game.mbga.jp/*"
+      ],
       "js": ["content.js"]
     }
   ]
