@@ -5,7 +5,7 @@ async function raidSearchRoutine() {
 
     const currentLoc = window.location.hash;
     if (!currentLoc.includes("quest/assist") && 
-        !currentLoc.includes("quest/supporter") && 
+        !currentLoc.includes("quest/supporter_raid") && 
         !currentLoc.includes("raid_multi") && 
         !currentLoc.includes("result")) {
         uiLog(">> Navigating to Assist Lobby...");
@@ -17,6 +17,12 @@ async function raidSearchRoutine() {
         await sleep(1000);
         if (!isRunning || currentExecutionToken !== myToken) break;
 
+        // 🚨 CRITICAL BAN PREVENTION CHECK 🚨
+        if (checkCaptcha()) {
+            currentExecutionToken++; // Immediately orphan this loop
+            break; // Completely halt execution
+        }
+
         const currentHash = window.location.hash;
 
         // --- STATE A: Quest Assist Lobby ---
@@ -24,21 +30,38 @@ async function raidSearchRoutine() {
             chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'SEARCHING' }).catch(() => {});
             
             const popupWrapper = document.querySelector('.pop-show');
-            if (popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none' 
-            && document.querySelector('#popup-body').innerText !== "You can only provide backup in up to three raid battles at once.") {
+            if(popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none' 
+            && document.querySelector('#popup-body').innerText === "You can only provide backup in up to three raid battles at once.") {
+                await gameClick('.pop-show .btn-usual-ok', true);
+                uiLog(">> Cleared '3 Raid Limit' Popup.");
+                await sleep(5000);
+                continue;
+            }
+            else if(popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none' 
+            && document.querySelector('#popup-body').innerText === "This raid battle has already ended.") {
+                await gameClick('.pop-show .btn-usual-ok', true);
+                uiLog(">> Cleared 'Already Ended' Popup.");
+                await sleep(1000);
+                gameClick('.btn-search-refresh');
+                continue;
+            }
+            else if(document.querySelector('.pop-result-assist-raid.pop-show') 
+            && window.getComputedStyle(document.querySelector('.pop-result-assist-raid.pop-show')).display !== 'none') {
+                const okBtn = document.querySelector('.pop-result-assist-raid.pop-show > .prt-popup-footer > .btn-usual-ok');
+                if (okBtn) {
+                    uiLog(">> ⚠️ Raid already ended! Clearing popup...");
+                    await gameClick('.pop-result-assist-raid .btn-usual-ok', true);
+                    await sleep(1000);
+                    continue;
+                }
+            }
+            else if(popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none') {
                 const hasBtn = popupWrapper.querySelector('.btn-usual-use, .btn-usual-ok');
                 if (hasBtn) {
                     await gameClick('.pop-show .btn-usual-use, .pop-show .btn-usual-ok', true);
                     uiLog(">> Cleared Popup (Consumed EP or closed alert).");
                     continue;
                 }
-            }
-            else if(popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none' 
-            && document.querySelector('#popup-body').innerText === "You can only provide backup in up to three raid battles at once.") {
-                await gameClick('.pop-show .btn-usual-ok', true);
-                uiLog(">> Cleared '3 Raid Limit' Popup.");
-                await sleep(5000);
-                continue;
             }
 
             const searchTab = document.querySelector('#tab-search.btn-tabs');
@@ -66,8 +89,18 @@ async function raidSearchRoutine() {
         }
         
         // --- STATE B: Supporter / Summon Selection Page ---
-        else if (currentHash.includes("quest/supporter")) {
+        else if (currentHash.includes("quest/supporter_raid")) {
             chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'SUPPORTER_SELECT' }).catch(() => {});
+
+            const popupWrapper = document.querySelector('.pop-show');
+            if(popupWrapper && window.getComputedStyle(popupWrapper).display !== 'none') {
+                const hasBtn = popupWrapper.querySelector('.btn-usual-use, .btn-usual-ok');
+                if (hasBtn) {
+                    await gameClick('.pop-show .btn-usual-use, .pop-show .btn-usual-ok', true);
+                    uiLog(">> Cleared Popup (Consumed EP or closed alert).");
+                    continue;
+                }
+            }
             
             const startBtn = document.querySelector('.se-quest-start');
             if (startBtn && !startBtn.classList.contains('disable')) {
@@ -93,9 +126,10 @@ async function raidSearchRoutine() {
                 const waitMs = parseInt(currentWaitTime, 10) * 1000;
                 uiLog(`[Raid Search] Action confirmed. Waiting ${currentWaitTime} seconds...`);
                 await sleep(waitMs);
+                
                 uiLog(`[Raid Search] ${currentWaitTime}s elapsed! Returning to lobby...`);
                 window.location.hash = "quest/assist";
-                continue;
+                continue; 
             }
         }
 
@@ -112,7 +146,7 @@ async function raidSearchRoutine() {
 
             if (document.querySelector("#cjs-lp-rankup")) {
                 await gameClick("#cjs-lp-rankup");
-                uiLog("[Daily Skip] Cleared Rank Up.");
+                uiLog("Cleared Rank Up.");
                 madeAnAction = true;
             }
 

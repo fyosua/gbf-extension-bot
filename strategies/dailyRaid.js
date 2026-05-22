@@ -24,6 +24,12 @@ async function dailyRaidSkip() {
         await sleep(1000);
         if (!isRunning || currentExecutionToken !== myToken) break;
 
+        // 🚨 CRITICAL BAN PREVENTION CHECK 🚨
+        if (checkCaptcha()) {
+            currentExecutionToken++; // Immediately orphan this loop
+            break; // Completely halt execution
+        }
+
         const currentHash = window.location.hash;
 
         // --- STATE A: Quest Selection List ---

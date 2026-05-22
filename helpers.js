@@ -18,6 +18,32 @@ function uiLog(message) {
     chrome.runtime.sendMessage({ type: "UI_LOG", text: message }).catch(() => {});
 }
 
+// 🚨 HIGH ALERT: STRICT ACCESS VERIFICATION CHECKER 🚨
+function checkCaptcha() {
+    const activePopup = document.querySelector('.pop-show');
+    
+    // Make sure the popup is actually visible on the screen
+    if (activePopup && window.getComputedStyle(activePopup).display !== 'none') {
+        const popupHeader = activePopup.querySelector('.prt-popup-header');
+        
+        // Look for the exact CAPTCHA text
+        if (popupHeader && popupHeader.textContent.includes('Access Verification')) {
+            uiLog(">> 🚨 CRITICAL: ACCESS VERIFICATION DETECTED! 🚨");
+            uiLog(">> Emergency stop activated to prevent account ban!");
+            
+            // Immediately halt all engine flags
+            isRunning = false;
+            sessionStorage.setItem('gbf_isRunning', 'false');
+            
+            // Force the UI button back to green
+            chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'IDLE' }).catch(() => {});
+            
+            return true; // Signals the loop to die
+        }
+    }
+    return false; // Safe, no CAPTCHA found
+}
+
 // Fluid clicker now accepts a 'force' parameter to bypass visibility checks
 async function gameClick(selector, force = false) {
     const element = document.querySelector(selector);
