@@ -3,44 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    /* Full height flex layout */
-    body { 
-        height: 100vh; 
-        display: flex; 
-        flex-direction: column;
-        /* background-color: #111;  */
-        /* color: #0f0;  */
-        /* font-family: monospace;  */
-        /* padding: 15px;  */
-        margin: 0; 
-        box-sizing: border-box;
-    }
-    body { background-color: #121212; color: #00ff00; font-family: 'Courier New', monospace; padding: 10px; margin: 0; }
+    body { background-color: #121212; color: #00ff00; font-family: 'Courier New', monospace; padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
     h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-    select, button { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; }
+    /* Added input[type="number"] to match the styling of your buttons and selects */
+    select, button, input[type="number"] { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; box-sizing: border-box; }
     button:hover { background: #0f0; color: #000; font-weight: bold; }
+    .log-box { flex-grow: 1; background: #000; border: 1px solid #333; padding: 10px; overflow-y: auto; color: #888; font-size: 12px; white-space: pre-wrap; }
     
-    /* Log box now stretches to fill all available vertical space */
-    .log-box { 
-        flex-grow: 1; 
-        background: #000; 
-        border: 1px solid #333; 
-        padding: 10px; 
-        overflow-y: auto; 
-        color: #888; 
-        font-size: 12px; 
-        white-space: pre-wrap;
-    }
+    .config-label { font-size: 12px; color: #aaa; margin-bottom: 5px; display: block; }
   </style>
 </head>
 <body>
   <h3>🗡️ GBF Auto Framework</h3>
   
+  <span class="config-label">Select Routine:</span>
   <select id="routineSelect">
     <option value="slime">🗡️ Slime Farmer Routine</option>
     <option value="buff">🎁 Daily Buff Checker</option>
     <option value="dailyRaid">⚔️ Daily Raid Skip</option>
+    <option value="raidSearch">🔍 Auto Raid Search</option> 
   </select>
+
+  <div id="slotConfigContainer" style="display: none;">
+    <span class="config-label">Target Search Slot:</span>
+    <select id="slotSelect">
+      <option value="1">Slot 1</option>
+      <option value="2">Slot 2</option>
+      <option value="3">Slot 3</option>
+      <option value="4">Slot 4</option>
+    </select>
+
+    <span class="config-label">Auto-Attack Wait Time (Seconds):</span>
+    <input type="number" id="waitTimeInput" value="15" min="1" max="180">
+  </div>
 
   <button id="startBtn">Start Engine</button>
   
