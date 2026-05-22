@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    
+    <linearGradient id="crystalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    
+    <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#bgGrad)" />
+
+  <g transform="translate(64, 64)" fill="url(#gearGrad)">
+    <circle r="42" fill="none" stroke="url(#gearGrad)" stroke-width="5" opacity="0.8" />
+    <circle r="48" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6" />
+    
+    <rect x="-5" y="-47" width="10" height="10" rx="2" />
+    <rect x="-5" y="37" width="10" height="10" rx="2" />
+    <rect x="-47" y="-5" width="10" height="10" rx="2" />
+    <rect x="37" y="-5" width="10" height="10" rx="2" />
+    <rect x="-5" y="-47" width="10" height="10" rx="2" transform="rotate(45)" />
+    <rect x="-5" y="-47" width="10" height="10" rx="2" transform="rotate(135)" />
+    <rect x="-5" y="-47" width="10" height="10" rx="2" transform="rotate(225)" />
+    <rect x="-5" y="-47" width="10" height="10" rx="2" transform="rotate(315)" />
+  </g>
+
+  <path d="M64 26 L86 64 L64 102 L42 64 Z" fill="#38bdf8" opacity="0.25" />
+
+  <path d="M64 30 L83 64 L64 98 L45 64 Z" fill="url(#crystalGrad)" />
+  
+  <path d="M64 30 L64 98 L83 64 Z" fill="#ffffff" fill-opacity="0.15" />
+  <path d="M64 30 L45 64 L64 64 Z" fill="#ffffff" fill-opacity="0.1" />
+
+  <g>
+    <rect x="40" y="61" width="48" height="6" rx="3" fill="#0f172a" opacity="0.4" />
+    <line x1="36" y1="64" x2="92" y2="64" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="64" cy="64" r="4" fill="#38bdf8" />
+    <circle cx="64" cy="64" r="1.5" fill="#ffffff" />
+  </g>
+</svg>
