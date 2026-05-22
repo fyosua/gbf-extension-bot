@@ -2,7 +2,15 @@ const logBox = document.getElementById('statusLog');
 const btn = document.getElementById('startBtn');
 
 function writeLog(text) {
-    logBox.innerText += `\n${text}`;
+    const logLine = document.createElement('div');
+    logLine.textContent = text;
+    logBox.appendChild(logLine);
+
+    // 🛠️ ANTI-LEAK: Keep only the last 100 logs in memory. Delete the rest.
+    while (logBox.children.length > 100) {
+        logBox.removeChild(logBox.firstChild);
+    }
+
     logBox.scrollTop = logBox.scrollHeight;
 }
 

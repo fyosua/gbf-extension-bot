@@ -3,6 +3,9 @@ let isRunning = sessionStorage.getItem('gbf_isRunning') === 'true';
 let buffsCheckedThisSession = sessionStorage.getItem('gbf_buffsChecked') === 'true'; 
 let currentRoutine = sessionStorage.getItem('gbf_routine') || '';
 
+// 🛠️ ANTI-ZOMBIE LOOP: The Execution Token
+let currentExecutionToken = 0;
+
 // The heartbeat timer
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,7 +24,7 @@ if (isRunning) {
     }, 1000); // Brief delay to let the DOM settle after a reload
 }
 
-// 🛠️ UPDATED: Fluid clicker now accepts a 'force' parameter to bypass visibility checks
+// Fluid clicker now accepts a 'force' parameter to bypass visibility checks
 async function gameClick(selector, force = false) {
     const element = document.querySelector(selector);
     
@@ -73,6 +76,9 @@ async function dailyBuffRoutine() {
 
 // --- FLUID STATE-MACHINE SLIME ROUTINE ---
 async function farmSlimeRoutine() {
+    // 🛠️ CLAIM EXECUTION TOKEN
+    const myToken = ++currentExecutionToken;
+
     uiLog(">> 🗡️ Slime Farmer Engine Started!");
     
     if (!buffsCheckedThisSession) {
@@ -88,10 +94,10 @@ async function farmSlimeRoutine() {
         await sleep(1000);
     }
 
-    // THE HEARTBEAT LOOP
-    while (isRunning) {
+    // 🛠️ LOOP BOUND TO TOKEN
+    while (isRunning && currentExecutionToken === myToken) {
         await sleep(1000);
-        if (!isRunning) break;
+        if (!isRunning || currentExecutionToken !== myToken) break;
 
         const currentHash = window.location.hash;
 
@@ -109,6 +115,21 @@ async function farmSlimeRoutine() {
                     continue;
                 }
                 continue;
+            }
+            else{
+                const kaguyaSummonULB = document.querySelector('.btn-supporter.lis-supporter:has([data-image="2040114000"]):has(.bless-rank2-style)');
+                if(kaguyaSummonULB){
+                    await gameClick('.btn-supporter.lis-supporter:has([data-image="2040114000"]):has(.bless-rank2-style)');
+                    uiLog("[State A] Kaguya summon ULB detected. Selecting...");
+                    await sleep(500);
+                    continue;
+                }
+                else{
+                    await gameClick('.btn-supporter.lis-supporter:has([data-image="2040114000"])');
+                    uiLog("[State A] Kaguya summon detected. Selecting...");
+                    await sleep(500);
+                    continue;
+                }
             }
         }
         
@@ -177,14 +198,18 @@ async function farmSlimeRoutine() {
         }
     }
     
-    uiLog(">> 🛑 Engine Stopped Safely.");
+    // Only log stop if THIS specific loop was the one that was stopped naturally
+    if (currentExecutionToken === myToken) uiLog(">> 🛑 Engine Stopped Safely.");
 }
 
 // --- DAILY RAID SKIP ROUTINE ---
 async function dailyRaidSkip() {
+    // 🛠️ CLAIM EXECUTION TOKEN
+    const myToken = ++currentExecutionToken;
+
     uiLog(">> ⏩ Starting Daily Raid Skip...");
 
-    // 1. 🛠️ NEW: Pre-Grind Buff Check (Runs only once per session)
+    // 1. Pre-Grind Buff Check (Runs only once per session)
     if (!buffsCheckedThisSession) {
         uiLog(">> First run detected. Initiating Pre-Grind Buff Check...");
         chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'BUFF_CHECK' }).catch(() => {});
@@ -203,11 +228,11 @@ async function dailyRaidSkip() {
 
     let failSafeClicked = 0;
 
-    // THE HEARTBEAT LOOP
-    while (isRunning) {
+    // 🛠️ LOOP BOUND TO TOKEN
+    while (isRunning && currentExecutionToken === myToken) {
         uiLog(">> Checking Daily Raid Quest...");
         await sleep(1000);
-        if (!isRunning) break;
+        if (!isRunning || currentExecutionToken !== myToken) break;
 
         const currentHash = window.location.hash;
 
@@ -283,7 +308,7 @@ async function dailyRaidSkip() {
                 }
             }
 
-            // 2. 🛠️ THE AUTO-STOP FAILSAFE
+            // THE AUTO-STOP FAILSAFE
             failSafeClicked++;
             if (failSafeClicked >= 3) {
                 isRunning = false;
@@ -365,15 +390,22 @@ async function dailyRaidSkip() {
     }
 
     // Double check that the engine safely broadcasts IDLE when the while-loop exits naturally
-    chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'IDLE' }).catch(() => {});
-    uiLog(">> 🛑 Engine Stopped Safely.");
+    if (currentExecutionToken === myToken) {
+        chrome.runtime.sendMessage({ type: 'STATUS_UPDATE', state: 'IDLE' }).catch(() => {});
+        uiLog(">> 🛑 Engine Stopped Safely.");
+    }
 }
 
 // --- EXTENSION MESSAGE LISTENER ---
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.command === "start") {
         
-        // 🛠️ FIX: Removed 'if (!isRunning)' so start command always works
+        // 🛠️ PREVENT CONCURRENT EXECUTION: Orphan old loops
+        if (isRunning) {
+            uiLog(">> ⚠️ Terminating old loop and starting fresh...");
+            currentExecutionToken++; 
+        }
+
         isRunning = true;
         currentRoutine = request.routine;
         
@@ -390,6 +422,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ status: "started" });
     } else if (request.command === "stop") {
         isRunning = false;
+        
+        // 🛠️ INSTANTLY ORPHAN ANY SLEEPING LOOPS
+        currentExecutionToken++; 
         
         // Fully wipe the engine state when manually stopped
         sessionStorage.setItem('gbf_isRunning', 'false'); 
