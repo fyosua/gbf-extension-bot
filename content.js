@@ -139,17 +139,27 @@ async function farmSlimeRoutine() {
 
             const emptyResult = document.querySelector(".txt-empty-notice");
             if(emptyResult){
+                gameClick(".btn-control.location-href");
                 madeAnAction = true;
             }
 
             if (document.querySelector("#cjs-lp-rankup")) {
                 await gameClick("#cjs-lp-rankup");
+                uiLog("[State C] Cleared Rank Up.");
                 await sleep(500);
                 madeAnAction = true;
             }
 
             const clickedOk = await gameClick(".btn-usual-ok");
             if (clickedOk) {
+                uiLog("[State C] Clicking OK...");
+                await sleep(500);
+                madeAnAction = true;
+            }
+
+            const clickedClose = await gameClick(".btn-usual-close");
+            if (clickedClose) {
+                uiLog("[State C] Closing Results...");
                 await sleep(500);
                 madeAnAction = true;
             }
