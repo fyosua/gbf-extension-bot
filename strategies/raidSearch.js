@@ -64,6 +64,7 @@ async function raidSearchRoutine() {
                 }
             }
 
+            // Ensure we are on the correct Search Tab first
             const searchTab = document.querySelector('#tab-search.btn-tabs');
             if (searchTab && !searchTab.classList.contains('active')) {
                 uiLog(">> Switching to 'Search' tab...");
@@ -71,6 +72,7 @@ async function raidSearchRoutine() {
                 continue; 
             }
 
+            // Ensure we are on the correct Target Slot second
             const slotSelector = `.btn-search-switch[data-slot="${currentSearchSlot}"]`;
             const slotBtn = document.querySelector(slotSelector);
             if (slotBtn && !slotBtn.classList.contains('active')) {
@@ -79,6 +81,16 @@ async function raidSearchRoutine() {
                 continue; 
             }
 
+            // 🛠️ NEW FIX: Check if the raid list is empty after selecting the correct slot
+            const noTargetTxt = document.querySelector('.txt-no-search-target');
+            if (noTargetTxt && noTargetTxt.getBoundingClientRect().width > 0) {
+                uiLog(">> No active raids found. Refreshing list...");
+                await gameClick('.btn-search-refresh');
+                await sleep(1000); // Give the network a beat to fetch new raids
+                continue;
+            }
+
+            // Finally, engage the raid if available
             const availableRaid = document.querySelector('.btn-multi-raid');
             if (availableRaid) {
                 uiLog(">> Raid found! Joining...");
@@ -97,7 +109,7 @@ async function raidSearchRoutine() {
                 const hasBtn = popupWrapper.querySelector('.btn-usual-use, .btn-usual-ok');
                 if (hasBtn) {
                     await gameClick('.pop-show .btn-usual-use, .pop-show .btn-usual-ok', true);
-                    uiLog(">> Cleared Popup on support page.");
+                    uiLog(">> Cleared Popup (Consumed EP or closed alert).");
                     continue;
                 }
             }
@@ -122,7 +134,7 @@ async function raidSearchRoutine() {
             const clickedAuto = document.querySelector(".btn-auto");
             if (clickedAuto && clickedAuto.getBoundingClientRect().width > 0) {
                 await gameClick(".btn-auto");
-                // 🛠️ THE FIX: Dynamically calculate wait time based on the variable
+                
                 const waitMs = parseInt(currentWaitTime, 10) * 1000;
                 uiLog(`[Raid Search] Action confirmed. Waiting ${currentWaitTime} seconds...`);
                 await sleep(waitMs);
