@@ -2,6 +2,7 @@ const logBox = document.getElementById('statusLog');
 const btn = document.getElementById('startBtn');
 const routineSelect = document.getElementById('routineSelect');
 const slotConfigContainer = document.getElementById('slotConfigContainer');
+const slimeConfigContainer = document.getElementById('slimeConfigContainer'); // 🛠️ NEW UI Element
 
 // --- 1. MEMORY-SAFE UI LOGGER ---
 function writeLog(text) {
@@ -9,7 +10,6 @@ function writeLog(text) {
     logLine.textContent = text;
     logBox.appendChild(logLine);
 
-    // Keep only the last 100 logs in memory to prevent RAM leaks
     while (logBox.children.length > 100) {
         logBox.removeChild(logBox.firstChild);
     }
@@ -30,14 +30,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // --- 3. DYNAMIC UI LISTENER FOR CONFIGS ---
 routineSelect.addEventListener('change', (event) => {
-    if (event.target.value === "raidSearch") {
-        slotConfigContainer.style.display = "block"; // Show it
-    } else {
-        slotConfigContainer.style.display = "none";  // Hide it
-    }
+    const selected = event.target.value;
+    slotConfigContainer.style.display = selected === "raidSearch" ? "block" : "none";
+    slimeConfigContainer.style.display = selected === "slime" ? "block" : "none"; // 🛠️ Toggle Slime UI
 });
 
-// Safely scans the current window to find your active Granblue tab
 async function getGBFTab() {
     let tabs = await chrome.tabs.query({ currentWindow: true });
     return tabs.find(t => t.active && t.url && (t.url.includes("granbluefantasy") || t.url.includes("mbga")));
@@ -53,17 +50,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Check if the engine is already running when we open the panel
+    // Trigger UI toggle on initial load so it matches the default dropdown value
+    routineSelect.dispatchEvent(new Event('change'));
+
     chrome.tabs.sendMessage(tab.id, { command: "getStatus" }).then((response) => {
         if (response && response.isRunning) {
             btn.innerText = "Stop Engine";
             btn.style.color = "red";
             btn.style.borderColor = "red";
             
-            // Sync the dropdown visibility
-            if (response.currentRoutine === "raidSearch") {
-                slotConfigContainer.style.display = "block";
-            }
+            routineSelect.value = response.currentRoutine;
+            routineSelect.dispatchEvent(new Event('change')); // Sync UI
+            
             writeLog(">> Reconnected to running engine...");
         }
     }).catch(() => {}); 
@@ -73,7 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 btn.addEventListener('click', async () => {
     const routine = routineSelect.value;
     const targetSlot = document.getElementById('slotSelect').value; 
-    const targetWaitTime = document.getElementById('waitTimeInput').value; // 🛠️ Grab the wait time
+    const targetWaitTime = document.getElementById('waitTimeInput').value; 
+    const targetSlimeId = document.getElementById('slimeIdInput').value || '400181/4'; // 🛠️ Grab Slime ID
     
     let tab = await getGBFTab();
 
@@ -86,17 +85,34 @@ btn.addEventListener('click', async () => {
         
         if (routine === "raidSearch") {
             writeLog(`>> Starting ${routine} (Slot ${targetSlot}, ${targetWaitTime}s wait)...`);
+        } else if (routine === "slime") {
+            writeLog(`>> Starting ${routine} (Quest ID: ${targetSlimeId})...`);
         } else {
             writeLog(`>> Starting ${routine} routine...`);
         }
         
-        // Pass the payload to the engine
-        chrome.tabs.sendMessage(tab.id, { 
-            command: "start", 
-            routine: routine,
-            searchSlot: targetSlot,
-            waitTime: targetWaitTime // 🛠️ Send to content.js
-        }).catch(() => {});
+        try {
+            await chrome.tabs.sendMessage(tab.id, { 
+                command: "start", 
+                routine: routine,
+                searchSlot: targetSlot,
+                waitTime: targetWaitTime,
+                slimeId: targetSlimeId // 🛠️ Send to content.js
+            });
+
+            if (chrome.runtime.lastError) {
+                writeLog(">> ❌ Error: Content script not found. Please hard-refresh (F5) the game tab.");
+                btn.innerText = "Start Engine";
+                btn.style.color = "#0f0";
+                btn.style.borderColor = "#0f0";
+            }
+        } catch (error) {
+            writeLog(">> ❌ Communication error. Is the game tab fully loaded?");
+            btn.innerText = "Start Engine";
+            btn.style.color = "#0f0";
+            btn.style.borderColor = "#0f0";
+        }
+
     } else {
         btn.innerText = "Start Engine";
         btn.style.color = "#0f0";

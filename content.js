@@ -1,15 +1,32 @@
 // --- content.js (The Main Engine Orchestrator) ---
 
+// Centralized Routing Logic
+function routeRoutine(routineType) {
+    switch(routineType) {
+        case "slime": 
+            farmSlimeRoutine(); 
+            break;
+        case "buff": 
+            dailyBuffRoutine(); 
+            break;
+        case "dailyRaid": 
+            dailyRaidSkip(); 
+            break;
+        case "raidSearch":
+            if (!isRunning) return; 
+            uiLog(`>> Engine starting up (Targeting Slot ${currentSearchSlot}, Wait Time: ${currentWaitTime}s)...`);
+            raidSearchRoutine();
+            break;
+        default:
+            uiLog(`>> ⚠️ Unknown routine: ${routineType}`);
+    }
+}
+
 // Auto-resume if the page just hard-reloaded while the engine was active
 if (isRunning) {
     setTimeout(() => {
         uiLog(">> 🔄 Page reloaded. Restoring engine state...");
-        
-        // Route to the strategies loaded from the /strategies/ folder
-        if (currentRoutine === "slime") farmSlimeRoutine();
-        else if (currentRoutine === "buff") dailyBuffRoutine();
-        else if (currentRoutine === "dailyRaid") dailyRaidSkip();
-        else if (currentRoutine === "raidSearch") raidSearchRoutine(); 
+        routeRoutine(currentRoutine);
     }, 1000); 
 }
 
@@ -26,20 +43,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         currentRoutine = request.routine;
         currentSearchSlot = request.searchSlot; 
         currentWaitTime = request.waitTime || '15'; 
+        currentSlimeId = request.slimeId || '400181/4'; // 🛠️ Receive Data
         
-        // Save state to sessionStorage (variables are handled in helpers.js)
+        // Save state to sessionStorage 
         sessionStorage.setItem('gbf_isRunning', 'true');
         sessionStorage.setItem('gbf_routine', request.routine);
         sessionStorage.setItem('gbf_searchSlot', request.searchSlot); 
         sessionStorage.setItem('gbf_waitTime', currentWaitTime); 
+        sessionStorage.setItem('gbf_slimeId', currentSlimeId); // 🛠️ Store Data
 
-        if (request.routine === "slime") farmSlimeRoutine();
-        else if (request.routine === "buff") dailyBuffRoutine();
-        else if (request.routine === "dailyRaid") dailyRaidSkip();
-        else if (request.routine === "raidSearch"){
-            uiLog(`>> Engine starting up (Targeting Slot ${currentSearchSlot}, Wait Time: ${currentWaitTime}s)...`);
-            raidSearchRoutine();
-        }
+        routeRoutine(request.routine);
         
         sendResponse({ status: "started" });
         
@@ -55,7 +68,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ status: "stopped" });
         
     } else if (request.command === "getStatus") {
-        sendResponse({ isRunning: isRunning });
+        sendResponse({ isRunning: isRunning, currentRoutine: currentRoutine });
     }
     return true; 
 });

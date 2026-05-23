@@ -97,7 +97,7 @@ async function raidSearchRoutine() {
                 const hasBtn = popupWrapper.querySelector('.btn-usual-use, .btn-usual-ok');
                 if (hasBtn) {
                     await gameClick('.pop-show .btn-usual-use, .pop-show .btn-usual-ok', true);
-                    uiLog(">> Cleared Popup (Consumed EP or closed alert).");
+                    uiLog(">> Cleared Popup on support page.");
                     continue;
                 }
             }

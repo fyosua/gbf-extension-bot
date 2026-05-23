@@ -1,7 +1,7 @@
 // --- strategies/slime.js ---
 async function farmSlimeRoutine() {
     const myToken = ++currentExecutionToken;
-    uiLog(">> 🗡️ Slime Farmer Engine Started!");
+    uiLog(`>> 🗡️ Slime Farmer Engine Started (Target: ${currentSlimeId})!`);
     
     if (!buffsCheckedThisSession) {
         uiLog(">> First run detected. Initiating Pre-Grind Buff Check...");
@@ -10,11 +10,15 @@ async function farmSlimeRoutine() {
         sessionStorage.setItem('gbf_buffsChecked', 'true');
     }
 
-    if (!window.location.hash.includes("quest/supporter/400181/4")) {
-        uiLog(">> Navigating to Slime Quest...");
-        window.location.hash = "quest/supporter/400181/4";
+    // 🛠️ DYNAMIC ID IMPLEMENTED HERE
+    if (!window.location.hash.includes(`quest/supporter/${currentSlimeId}`)) {
+        uiLog(`>> Navigating to Slime Quest (${currentSlimeId})...`);
+        window.location.hash = `quest/supporter/${currentSlimeId}`;
         await sleep(1000);
     }
+
+    // Extract just the base number (e.g., "400181" from "400181/4") for safer state checking
+    const baseQuestId = currentSlimeId.split('/')[0];
 
     while (isRunning && currentExecutionToken === myToken) {
         await sleep(1000);
@@ -29,7 +33,8 @@ async function farmSlimeRoutine() {
         const currentHash = window.location.hash;
 
         // --- STATE A: Supporter Page ---
-        if (currentHash.includes("quest/supporter/400181")) {
+        // 🛠️ DYNAMIC BASE ID IMPLEMENTED HERE
+        if (currentHash.includes(`quest/supporter/${baseQuestId}`)) {
             const startBtn = document.querySelector(".se-quest-start");
             
             if (startBtn && startBtn.getBoundingClientRect().width > 0 && !startBtn.classList.contains('disable')) {

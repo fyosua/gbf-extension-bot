@@ -58,13 +58,16 @@ async function dailyRaidSkip() {
 
             let clickedARaid = false;
 
-            for (let skip of proSkips) {
-                const selector = `.btn-set-quest.multi[data-quest-id="${skip.id}"]`;
-                const questBtn = document.querySelector(selector);
+            // 🛠️ PERFORMANCE FIX: Query the DOM once, then match against the array
+            const availableQuests = document.querySelectorAll('.btn-set-quest.multi:not(.disable)');
+            
+            for (let questBtn of availableQuests) {
+                const questId = questBtn.getAttribute('data-quest-id');
+                const match = proSkips.find(skip => skip.id === questId);
                 
-                if (questBtn && !questBtn.classList.contains('disable')) {
-                    uiLog(`>> Navigating to ${skip.name} Daily Raid...`);
-                    const clickSuccess = await gameClick(selector, true);
+                if (match) {
+                    uiLog(`>> Navigating to ${match.name} Daily Raid...`);
+                    const clickSuccess = await gameClick(`.btn-set-quest.multi[data-quest-id="${match.id}"]`, true);
                     
                     if (clickSuccess) {
                         clickedARaid = true;

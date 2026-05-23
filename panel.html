@@ -5,8 +5,7 @@
   <style>
     body { background-color: #121212; color: #00ff00; font-family: 'Courier New', monospace; padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
     h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-    /* Added input[type="number"] to match the styling of your buttons and selects */
-    select, button, input[type="number"] { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; box-sizing: border-box; }
+    select, button, input[type="number"], input[type="text"] { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; box-sizing: border-box; }
     button:hover { background: #0f0; color: #000; font-weight: bold; }
     .log-box { flex-grow: 1; background: #000; border: 1px solid #333; padding: 10px; overflow-y: auto; color: #888; font-size: 12px; white-space: pre-wrap; }
     
@@ -23,6 +22,11 @@
     <option value="dailyRaid">⚔️ Daily Raid Skip</option>
     <option value="raidSearch">🔍 Auto Raid Search</option> 
   </select>
+
+  <div id="slimeConfigContainer" style="display: block;">
+    <span class="config-label">Target Quest ID (e.g., 400181/4):</span>
+    <input type="text" id="slimeIdInput" value="400181/4">
+  </div>
 
   <div id="slotConfigContainer" style="display: none;">
     <span class="config-label">Target Search Slot:</span>
