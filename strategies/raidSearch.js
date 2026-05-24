@@ -120,10 +120,10 @@ async function raidSearchRoutine() {
                 uiLog("[Raid Search] Party confirmed. Starting...");
                 continue; 
             } else {
-                const summon = document.querySelector('.prt-supporter-detail');
+                const summon = document.querySelector('.btn-supporter.lis-supporter');
                 if (summon) {
                     uiLog("[Raid Search] Selecting Summon...");
-                    await gameClick('.prt-supporter-detail');
+                    await gameClick('.btn-supporter.lis-supporter');
                     continue;
                 }
             }
