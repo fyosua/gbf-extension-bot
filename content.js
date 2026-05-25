@@ -17,6 +17,9 @@ function routeRoutine(routineType) {
             uiLog(`>> Engine starting up (Targeting Slot ${currentSearchSlot}, Wait Time: ${currentWaitTime}s)...`);
             raidSearchRoutine();
             break;
+        case "eventRun":
+            eventRunRoutine();
+            break;
         default:
             uiLog(`>> ⚠️ Unknown routine: ${routineType}`);
     }
@@ -40,26 +43,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
 
         isRunning = true;
+        
+        // 🛠️ 1. Capture ALL dynamic settings from the UI payload
         currentRoutine = request.routine;
         currentSearchSlot = request.searchSlot; 
         currentWaitTime = request.waitTime || '15'; 
-        currentSlimeId = request.slimeId || '400181/4'; // 🛠️ Receive Data
+        currentSlimeId = request.slimeId || '400181/4'; 
+        currentEventId = request.eventId || '944131/3'; 
+        currentSummonId = request.summonId || '2040094000_04'; 
+        currentSummonRank = request.summonRank || '4'; 
         
-        // Save state to sessionStorage 
+        // 🛠️ 2. Save EVERYTHING to sessionStorage so it survives GBF's hard page reloads
         sessionStorage.setItem('gbf_isRunning', 'true');
         sessionStorage.setItem('gbf_routine', request.routine);
         sessionStorage.setItem('gbf_searchSlot', request.searchSlot); 
         sessionStorage.setItem('gbf_waitTime', currentWaitTime); 
-        sessionStorage.setItem('gbf_slimeId', currentSlimeId); // 🛠️ Store Data
+        sessionStorage.setItem('gbf_slimeId', currentSlimeId); 
+        sessionStorage.setItem('gbf_eventId', currentEventId); 
+        sessionStorage.setItem('gbf_summonId', currentSummonId); 
+        sessionStorage.setItem('gbf_summonRank', currentSummonRank); 
 
+        // 3. Launch the requested routine
         routeRoutine(request.routine);
         
         sendResponse({ status: "started" });
         
     } else if (request.command === "stop") {
         isRunning = false;
+        
+        // Instantly orphan any sleeping loops
         currentExecutionToken++; 
         
+        // Wipe the engine state
         sessionStorage.setItem('gbf_isRunning', 'false'); 
         sessionStorage.setItem('gbf_buffsChecked', 'false'); 
         buffsCheckedThisSession = false; 

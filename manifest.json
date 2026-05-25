@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Granblue Automation Framework",
-  "version": "1.3.0",
-  "description": "Tick-based DOM automation tool for GBF.",
+  "version": "2.0.0",
+  "description": "A lightweight, state-based DOM automation tool.",
   
   "icons": {
     "16": "assets/icon.png",
@@ -46,6 +46,7 @@
         "strategies/slime.js",
         "strategies/dailyRaid.js",
         "strategies/raidSearch.js",
+        "strategies/eventRun.js",
         "content.js"
       ]
     }

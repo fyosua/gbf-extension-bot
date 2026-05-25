@@ -18,14 +18,26 @@
   <span class="config-label">Select Routine:</span>
   <select id="routineSelect">
     <option value="slime">🗡️ Slime Farmer Routine</option>
+    <option value="eventRun">⚔️ Event Auto-Run</option>
     <option value="buff">🎁 Daily Buff Checker</option>
-    <option value="dailyRaid">⚔️ Daily Raid Skip</option>
+    <option value="dailyRaid">⏩ Daily Raid Skip</option>
     <option value="raidSearch">🔍 Auto Raid Search</option> 
   </select>
 
   <div id="slimeConfigContainer" style="display: block;">
     <span class="config-label">Target Quest ID (e.g., 400181/4):</span>
     <input type="text" id="slimeIdInput" value="400181/4">
+  </div>
+
+  <div id="eventConfigContainer" style="display: none;">
+    <span class="config-label">Target Event ID (e.g., 944131/3):</span>
+    <input type="text" id="eventIdInput" value="944131/3">
+    
+    <span class="config-label">Target Summon ID:</span>
+    <input type="text" id="summonIdInput" value="2040094000_04">
+    
+    <span class="config-label">Target Summon Rank (0-4):</span>
+    <input type="number" id="summonRankInput" value="4" min="0" max="4">
   </div>
 
   <div id="slotConfigContainer" style="display: none;">

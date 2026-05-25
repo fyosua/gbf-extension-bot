@@ -123,7 +123,7 @@ async function raidSearchRoutine() {
                 const summon = document.querySelector('.btn-supporter.lis-supporter');
                 if (summon) {
                     uiLog("[Raid Search] Selecting Summon...");
-                    await gameClick('.btn-supporter.lis-supporter');
+                    await gameClick('.btn-supporter.lis-supporter', true);
                     continue;
                 }
             }
