@@ -48,18 +48,9 @@ async function farmSlimeRoutine() {
                 }
                 continue;
             } else {
-                const kaguyaSummonULB = document.querySelector('.btn-supporter.lis-supporter:has([data-image="2040114000"]):has(.bless-rank2-style)');
-                if(kaguyaSummonULB){
-                    await gameClick('.btn-supporter.lis-supporter:has([data-image="2040114000"]):has(.bless-rank2-style)');
-                    uiLog("[State A] Kaguya summon ULB detected. Selecting...");
-                    await sleep(500);
-                    continue;
-                } else {
-                    await gameClick('.btn-supporter.lis-supporter:has([data-image="2040114000"])');
-                    uiLog("[State A] Kaguya summon detected. Selecting...");
-                    await sleep(500);
-                    continue;
-                }
+                // 🛠️ Trigger the dynamic helper
+                const clickedSummon = await selectSummon("[Slime]");
+                if (clickedSummon) continue;
             }
         }
         
@@ -78,6 +69,7 @@ async function farmSlimeRoutine() {
                 await sleep(1800); 
                 await gameClick(".btn-auto");
                 await sleep(500); 
+                await waitForHash("result", "raid");
                 continue; 
             }
         }

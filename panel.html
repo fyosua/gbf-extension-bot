@@ -3,13 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { background-color: #121212; color: #00ff00; font-family: 'Courier New', monospace; padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
-    h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-    select, button, input[type="number"], input[type="text"] { width: 100%; background: #222; color: #0f0; border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; font-family: monospace; cursor: pointer; box-sizing: border-box; }
-    button:hover { background: #0f0; color: #000; font-weight: bold; }
-    .log-box { flex-grow: 1; background: #000; border: 1px solid #333; padding: 10px; overflow-y: auto; color: #888; font-size: 12px; white-space: pre-wrap; }
-    
-    .config-label { font-size: 12px; color: #aaa; margin-bottom: 5px; display: block; }
+    body { 
+      background-color: #121212; 
+      color: #00ff00; 
+      font-family: 'Courier New', monospace; 
+      padding: 10px; 
+      margin: 0; 
+      display: flex; 
+      flex-direction: column; 
+      height: 100vh; 
+      box-sizing: border-box; 
+    }
+    h3 { 
+      margin-top: 0; 
+      border-bottom: 1px solid #333; 
+      padding-bottom: 10px; 
+    }
+    select, button, input[type="number"], input[type="text"] { 
+      width: 100%; 
+      background: #222; 
+      color: #0f0; 
+      border: 1px solid #0f0; 
+      padding: 10px; 
+      margin-bottom: 15px; 
+      font-family: monospace; 
+      cursor: pointer; 
+      box-sizing: border-box; 
+    }
+    button:hover { 
+      background: #0f0; 
+      color: #000; 
+      font-weight: bold; 
+    }
+    .log-box { 
+      flex-grow: 1; 
+      background: #000; 
+      border: 1px solid #333; 
+      padding: 10px; 
+      overflow-y: auto; 
+      color: #888; 
+      font-size: 12px; 
+      white-space: pre-wrap; 
+    }
+    .config-label { 
+      font-size: 12px; 
+      color: #aaa; 
+      margin-bottom: 5px; 
+      display: block; 
+    }
   </style>
 </head>
 <body>
@@ -32,9 +73,27 @@
   <div id="eventConfigContainer" style="display: none;">
     <span class="config-label">Target Event ID (e.g., 944131/3):</span>
     <input type="text" id="eventIdInput" value="944131/3">
-    
-    <span class="config-label">Target Summon ID:</span>
-    <input type="text" id="summonIdInput" value="2040094000_04">
+  </div>
+
+  <div id="summonConfigContainer" style="display: block;">
+    <span class="config-label">Target Summon:</span>
+    <select id="summonIdInput">
+      <option value="2040114000">Kaguya</option>
+      <option value="2040003000">Bahamut</option>
+      <option value="2040056000">Lucifer</option>
+      <option value="2040094000">Agni</option>
+      <option value="2040100000">Varuna</option>
+      <option value="2040084000">Titan</option>
+      <option value="2040020000">Zephyrus</option>
+      <option value="2040080000">Zeus</option>
+      <option value="2040090000">Hades</option>
+      <option value="2040094000">Colossus</option>
+      <option value="2040028000">Leviathan</option>
+      <option value="2040027000">Yggdrasil</option>
+      <option value="2040020000">Tiamat</option>
+      <option value="2040047000">Luminiera</option>
+      <option value="2040046000">Celeste</option>
+    </select>
     
     <span class="config-label">Target Summon Rank (0-4):</span>
     <input type="number" id="summonRankInput" value="4" min="0" max="4">

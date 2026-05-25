@@ -1,14 +1,14 @@
-# 🗡️ Granblue Automation Framework (v2.0)
+# 🗡️ Granblue Automation Framework (v2.1.0)
 
 A lightweight, modular, and state-based DOM automation tool for Granblue Fantasy, built as a Manifest V3 Chrome Extension.
 
 Unlike traditional macro recorders or pixel-search bots, this framework operates natively within the browser environment. It uses a **Tick-Based State Machine** to read the game's actual URL hash and DOM elements in real-time, making it highly resilient to network lag, loading screen freezes, and hidden "ghost" buttons.
 
-## ✨ New in v2.0
-* **Modular Architecture:** Strategies and core engine logic are now split into separate, clean files (`helpers.js`, `content.js`, `strategies/...`) for easy maintenance.
+## ✨ New in v2.0.0
+* **Modular Architecture:** Strategies and core engine logic are now split into separate, clean files (`helpers.js`, `content.js`, `strategies/...`) for easy maintenance and scalability.
 * **Smart Hash Waiter:** Replaces static `sleep()` delays with an asynchronous watcher that proceeds the exact millisecond a page finishes loading, while actively scanning for CAPTCHAs and unexpected redirects.
 * **Execution Token Safety:** Prevents memory leaks and race conditions by assigning unique execution tokens to every loop. Old routines are instantly orphaned when new commands are issued.
-* **Dynamic UI Configurations:** The Side Panel now adapts to your selected routine, allowing you to input target Wait Times, Slime IDs, Event IDs, Summon IDs, and Summon Ranks without touching the code.
+* **Dynamic UI Configurations:** The Side Panel now adapts to your selected routine, allowing you to input target Wait Times, Slime IDs, Event IDs, Summon IDs, and Summon Ranks without needing to edit the source code.
 
 ## 🤖 Automated Routines
 

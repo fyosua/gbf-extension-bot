@@ -7,7 +7,8 @@ const routineSelect = document.getElementById('routineSelect');
 // UI Containers for dynamic configs
 const slotConfigContainer = document.getElementById('slotConfigContainer');
 const slimeConfigContainer = document.getElementById('slimeConfigContainer'); 
-const eventConfigContainer = document.getElementById('eventConfigContainer'); 
+const eventConfigContainer = document.getElementById('eventConfigContainer');
+const summonConfigContainer = document.getElementById('summonConfigContainer');
 
 // --- 1. MEMORY-SAFE UI LOGGER ---
 function writeLog(text) {
@@ -41,7 +42,8 @@ routineSelect.addEventListener('change', (event) => {
     // Toggle containers based on the active routine
     slotConfigContainer.style.display = selected === "raidSearch" ? "block" : "none";
     slimeConfigContainer.style.display = selected === "slime" ? "block" : "none"; 
-    eventConfigContainer.style.display = selected === "eventRun" ? "block" : "none"; 
+    eventConfigContainer.style.display = selected === "eventRun" ? "block" : "none";
+    summonConfigContainer.style.display = ["slime", "eventRun", "raidSearch"].includes(selected) ? "block" : "none";
 });
 
 async function getGBFTab() {
@@ -79,13 +81,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // --- 5. START/STOP BUTTON LOGIC ---
 btn.addEventListener('click', async () => {
-    // 🛠️ Grab ALL values from the UI inputs
+    // Grab elements
     const routine = routineSelect.value;
     const targetSlot = document.getElementById('slotSelect').value; 
     const targetWaitTime = document.getElementById('waitTimeInput').value; 
     const targetSlimeId = document.getElementById('slimeIdInput').value || '400181/4'; 
     const targetEventId = document.getElementById('eventIdInput').value || '944131/3'; 
-    const targetSummonId = document.getElementById('summonIdInput').value || '2040094000_04';
+    
+    // 🛠️ Grab both the ID (for the engine) and the Name (for the log)
+    const summonSelect = document.getElementById('summonIdInput');
+    const targetSummonId = summonSelect.value;
+    const targetSummonName = summonSelect.options[summonSelect.selectedIndex].text;
+    
     const targetSummonRank = document.getElementById('summonRankInput').value || '4'; 
     
     let tab = await getGBFTab();
@@ -97,19 +104,18 @@ btn.addEventListener('click', async () => {
         btn.style.color = "red";
         btn.style.borderColor = "red";
         
-        // Log contextual start messages based on the routine
+        // 🛠️ Print the Summon Name to the UI instead of the ID!
         if (routine === "raidSearch") {
-            writeLog(`>> Starting ${routine} (Slot ${targetSlot}, ${targetWaitTime}s wait)...`);
+            writeLog(`>> Starting ${routine} (Slot ${targetSlot}, Summon: ${targetSummonName})...`);
         } else if (routine === "slime") {
-            writeLog(`>> Starting ${routine} (Quest ID: ${targetSlimeId})...`);
+            writeLog(`>> Starting ${routine} (Quest: ${targetSlimeId}, Summon: ${targetSummonName})...`);
         } else if (routine === "eventRun") {
-            writeLog(`>> Starting ${routine} (Event: ${targetEventId}, Summon: ${targetSummonId}, Rank: ${targetSummonRank})...`); 
+            writeLog(`>> Starting ${routine} (Event: ${targetEventId}, Summon: ${targetSummonName} Rank: ${targetSummonRank})...`); 
         } else {
             writeLog(`>> Starting ${routine} routine...`);
         }
         
         try {
-            // 🛠️ Transmit the massive payload to the engine!
             await chrome.tabs.sendMessage(tab.id, { 
                 command: "start", 
                 routine: routine,
@@ -117,7 +123,7 @@ btn.addEventListener('click', async () => {
                 waitTime: targetWaitTime,
                 slimeId: targetSlimeId, 
                 eventId: targetEventId,
-                summonId: targetSummonId,
+                summonId: targetSummonId, // The engine still gets the ID
                 summonRank: targetSummonRank 
             });
 

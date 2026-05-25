@@ -103,3 +103,40 @@ async function gameClick(selector, force = false) {
     }
     return false; 
 }
+
+/**
+ * 🛠️ DYNAMIC SUMMON SELECTOR
+ * Automates the 3-step fallback logic for selecting a supporter summon.
+ * @param {string} logPrefix - Context tag for the logs (e.g., "[Event]", "[Slime]")
+ * @returns {Promise<boolean>} - True if a summon was clicked, false otherwise
+ */
+async function selectSummon(logPrefix = "[Summon]") {
+    // 1. Try for the Target Rank using "starts with" (^=)
+    const targetSelector = `.btn-supporter.lis-supporter:has([data-image^="${currentSummonId}"]):has(.bless-rank${currentSummonRank}-style)`;
+    if (document.querySelector(targetSelector)) {
+        await gameClick(targetSelector);
+        uiLog(`${logPrefix} Target Summon (${currentSummonId}) Rank ${currentSummonRank} detected. Selecting...`);
+        await sleep(500);
+        return true;
+    } 
+    
+    // 2. Try for Standard Fallback (Any Rank of that Summon)
+    const fallbackSelector = `.btn-supporter.lis-supporter:has([data-image^="${currentSummonId}"])`;
+    if (document.querySelector(fallbackSelector)) {
+        await gameClick(fallbackSelector);
+        uiLog(`${logPrefix} Target Summon (${currentSummonId}) detected (Fallback rank). Selecting...`);
+        await sleep(500);
+        return true;
+    }
+    
+    // 3. Absolute Fallback (So it doesn't freeze if target is completely missing)
+    const absoluteFallback = '.btn-supporter.lis-supporter';
+    if (document.querySelector(absoluteFallback)) {
+        await gameClick(absoluteFallback);
+        uiLog(`${logPrefix} Target summon missing. Selecting absolute fallback...`);
+        await sleep(500);
+        return true;
+    }
+    
+    return false;
+}

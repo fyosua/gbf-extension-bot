@@ -62,36 +62,9 @@ async function eventRunRoutine() {
                 
                 continue;
             } else {
-                // 1. Try for the Target Rank using "starts with" (^=) for the dynamic ID
-                const targetSelector = `.btn-supporter.lis-supporter:has([data-image^="${currentSummonId}"]):has(.bless-rank${currentSummonRank}-style)`;
-                const SummonTarget = document.querySelector(targetSelector);
-                
-                if(SummonTarget){
-                    await gameClick(targetSelector);
-                    uiLog(`[Event] Target Summon (${currentSummonId}) Rank ${currentSummonRank} detected. Selecting...`);
-                    await sleep(500);
-                    continue;
-                } 
-                
-                // 2. Try for Standard Fallback using "starts with" (^=) (Any Rank of that Summon)
-                const fallbackSelector = `.btn-supporter.lis-supporter:has([data-image^="${currentSummonId}"])`;
-                const SummonFallback = document.querySelector(fallbackSelector);
-                
-                if (SummonFallback) {
-                    await gameClick(fallbackSelector);
-                    uiLog(`[Event] Target Summon (${currentSummonId}) detected (Fallback rank). Selecting...`);
-                    await sleep(500);
-                    continue;
-                }
-                
-                // 3. Absolute Fallback (So it doesn't freeze if your target summon is completely missing)
-                const absoluteFallback = document.querySelector('.btn-supporter.lis-supporter');
-                if (absoluteFallback) {
-                    await gameClick('.btn-supporter.lis-supporter');
-                    uiLog("[Event] Target summon missing. Selecting absolute fallback...");
-                    await sleep(500);
-                    continue;
-                }
+                // 🛠️ Trigger the dynamic helper
+                const clickedSummon = await selectSummon("[Event]");
+                if (clickedSummon) continue;
             }
         }
         
